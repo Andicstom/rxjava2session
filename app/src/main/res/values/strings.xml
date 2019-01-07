@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RxJava2Session</string>
+    <string name="btn_add_sound">Add sound</string>
+</resources>
