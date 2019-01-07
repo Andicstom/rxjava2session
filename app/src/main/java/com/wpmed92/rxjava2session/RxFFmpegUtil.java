@@ -27,25 +27,53 @@ public class RxFFmpegUtil {
         ffmpeg = FFmpeg.getInstance(context);
     }
 
-    private Single<Boolean> init() {
-        return Single.create(observer -> {
-            try {
-                ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+    private void init() {
+        try {
+            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onSuccess() {
+                    Log.d("FfmpegUtil", "Successful initialization");
+                }
+
+                @Override
+                public void onFailure() {
+                    Log.d("FfmpegUtil", "Init failure");
+                }
+
+                @Override
+                public void onFinish() {
+                    //Ignore
+                }
+            });
+        } catch (FFmpegNotSupportedException e) {
+            Log.d("FfmpegUtil", "Not supported: " + e.getMessage());
+        }
+    }
+
+    private void exec(final String command) {
+        try {
+            String[] cmd = command.split(" ");
+
+            if (cmd.length != 0) {
+                ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
                     @Override
                     public void onStart() {
-
+                        //Ignore
                     }
 
                     @Override
-                    public void onSuccess() {
-                        Log.d("FfmpegUtil", "Successful initialization");
-                        observer.onSuccess(true);
+                    public void onSuccess(String s) {
+                        Log.d("FfmpegUtil", "Command exec succesful");
                     }
 
                     @Override
-                    public void onFailure() {
-                        Log.d("FfmpegUtil", "Init failure");
-                        observer.onError(new Throwable("Init failure"));
+                    public void onFailure(String s) {
+                        Log.d("FfmpegUtil", "Command failure: " + s);
                     }
 
                     @Override
@@ -53,48 +81,10 @@ public class RxFFmpegUtil {
                         //Ignore
                     }
                 });
-            } catch (FFmpegNotSupportedException e) {
-                Log.d("FfmpegUtil", "Not supported: " + e.getMessage());
-                observer.onError(e);
             }
-        });
-    }
-
-    private Single<Boolean> exec(final String command) {
-        return Single.create(observer -> {
-            try {
-                String[] cmd = command.split(" ");
-
-                if (cmd.length != 0) {
-                    ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
-                        @Override
-                        public void onStart() {
-                            //Ignore
-                        }
-
-                        @Override
-                        public void onSuccess(String s) {
-                            Log.d("FfmpegUtil", "Command exec succesful");
-                            observer.onSuccess(true);
-                        }
-
-                        @Override
-                        public void onFailure(String s) {
-                            Log.d("FfmpegUtil", "Command failure: " + s);
-                            observer.onError(new Throwable("Command failure"));
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            //Ignore
-                        }
-                    });
-                }
-            } catch (FFmpegCommandAlreadyRunningException e) {
-                Log.d("FfmpegUtil", "Command failure: " + e.getMessage());
-                observer.onError(e);
-            }
-        });
+        } catch (FFmpegCommandAlreadyRunningException e) {
+            Log.d("FfmpegUtil", "Command failure: " + e.getMessage());
+        }
     }
 
     public Observable<File> copyRawFile(Context ctx, int resid, File file) {
@@ -123,8 +113,8 @@ public class RxFFmpegUtil {
         });
     }
 
-    public Single<Boolean> executeCommand(final String command) {
-        return init().flatMap(success -> exec(command));
+    public void executeCommand(final String command) {
+        //TODO
     }
 }
 

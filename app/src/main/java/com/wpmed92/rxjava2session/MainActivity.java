@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         return dir.delete();
     }
 
-    private Single<File> addSoundToVimage() {
+    /*private Single<File> addSoundToVimage() {
         trimCache(this);
         File vimage = new File(this.getCacheDir(), "vimage.mp4");
         File sound = new File(this.getCacheDir(), "sound.mp3");
@@ -115,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
                     return rxFFmpegUtil.executeCommand("-i " + files.get(0) + " -i " + files.get(1) + " -codec copy -shortest " + vimageWithSound)
                             .map(success -> vimageWithSound);
                 });
-    }
+    }*/
 
     private void initAddSoundButton() {
-        ProgressDialog dialog = new ProgressDialog(this);
+        /*ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage("processing...");
 
         Disposable disposable = RxView.clicks(btnAddSound)
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     //btnAddSound.setVisibility(View.GONE);
                 }, e -> {
                     Log.d(TAG, e.getMessage());
-                });
+                });*/
     }
 
 }
